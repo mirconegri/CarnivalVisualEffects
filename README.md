@@ -11,6 +11,8 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 
 <video src="images/video1.mp4" autoplay loop muted playsinline width="100%">aopo</video>
 
+<video src="https://raw.githubusercontent.com/mirconegri/CarnivalVisualEffects/main/images/video1.mp4" autoplay loop muted playsinline width="100%"></video>
+
 ---
 
 ## 🚀 Features
