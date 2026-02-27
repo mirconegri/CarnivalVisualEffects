@@ -10,9 +10,6 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 ## 📸 Preview
 
 
-https://github.com/user-attachments/assets/a93e3a00-24e1-4c42-9fa8-6e29a0ac3876
-https://github.com/user-attachments/assets/9a58a13d-1093-414f-900f-3682a6fa3395
-
 
 ---
 
