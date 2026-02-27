@@ -8,7 +8,6 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 ---
 
 ## 📸 Preview
-## 📸 Preview
 
 | ![Quantum Nodes & Liquid Bob](images/video1_1.gif) | ![Oscilloscope & Audio Spark](images/video2_1.gif) |
 |:--:|:--:|
