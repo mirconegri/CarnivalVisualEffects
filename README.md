@@ -9,12 +9,13 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 
 ## 📸 Preview
 
-<video src="images/video1.mp4" autoplay loop muted playsinline width="100%">aopo</video>
+| ![Fractal Pulse](images/video1_1.gif) | ![Matrix Rain](images/video2_1.gif) |
+|:--:|:--:|
+| **Fractal Pulse**<br>Geometrie frattali rotanti che si espandono a ogni battito | **Matrix Rain**<br>Pioggia digitale che accelera e si illumina a tempo di musica |
 
-![Fractal Pulse](images/video1_1.gif)
-![Fractal Pulse](images/video4_1.gif)
-
-<video src="https://raw.githubusercontent.com/mirconegri/CarnivalVisualEffects/main/images/video1.mp4" autoplay loop muted playsinline width="100%"></video>
+| ![Laser Beams](images/video3_1.gif) | ![Oscilloscope](images/video4_1.gif) |
+|:--:|:--:|
+| **Laser Beams**<br>Raggi luminosi dinamici che cambiano intensità e colore | **Oscilloscope**<br>Onda classica che si distorce in base alle frequenze audio |
 
 ---
 
