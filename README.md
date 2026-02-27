@@ -9,6 +9,8 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 
 ## 📸 Preview
 
+<video src="images/video1.mp4" controls width="100%"></video>
+
 | ![Fractal Pulse](images/video1.mp4) | ![Matrix Rain](images/screenshot1.png) |
 |:--:|:--:|
 | **Fractal Pulse** | **Matrix Rain** |
