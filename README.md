@@ -8,15 +8,15 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 ---
 
 ## 📸 Preview
+## 📸 Preview
 
-| ![Fractal Pulse](images/video1_1.gif) | ![Matrix Rain](images/video2_1.gif) |
+| ![Quantum Nodes & Liquid Bob](images/video1_1.gif) | ![Oscilloscope & Audio Spark](images/video2_1.gif) |
 |:--:|:--:|
-| **Fractal Pulse**<br>Geometrie frattali rotanti che si espandono a ogni battito | **Matrix Rain**<br>Pioggia digitale che accelera e si illumina a tempo di musica |
+| **Quantum Nodes & Liquid Bob**<br>Interconnected audio-reactive nodes and beat-synced fluid dynamics | **Oscilloscope & Audio Spark**<br>Frequency-based waveform distortion with triggered particle sparks |
 
-| ![Laser Beams](images/video3_1.gif) | ![Oscilloscope](images/video4_1.gif) |
+| ![Flowing Waves & Particle Storm](images/video3_1.gif) | ![Fractal Sync](images/video4_1.gif) |
 |:--:|:--:|
-| **Laser Beams**<br>Raggi luminosi dinamici che cambiano intensità e colore | **Oscilloscope**<br>Onda classica che si distorce in base alle frequenze audio |
-
+| **Flowing Waves & Particle Storm**<br>Phase-shifting sine waves rendered within a chaotic particle field | **Fractal Sync**<br>Recursive geometric fractal structures scaling to bass frequencies |
 ---
 
 ## 🚀 Features
