@@ -81,6 +81,3 @@ MIT License © 2026 `Mirco Negri`
 `Mirco Negri`
 GitHub: https://github.com/mirconegri
 
-```
-
-```
