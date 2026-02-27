@@ -9,7 +9,7 @@ Built with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio AP
 
 ## 📸 Preview
 
-<video src="images/video1.mp4" autoplay loop muted playsinline width="100%"></video>
+<video src="images/video1.mp4" autoplay loop muted playsinline width="100%">aopo</video>
 
 ---
 
