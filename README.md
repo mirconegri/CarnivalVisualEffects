@@ -58,8 +58,14 @@ No `npm install` or build process required.
 ⚠️ Security Note: Most modern browsers block microphone access on file:// protocols. For local testing, serve the directory via a local web server (e.g., python3 -m http.server 8000 or VSCode Live Server).
 
 
-📜 License
-MIT License © 2025 Mirco Negri — see LICENSE file for details.
-👤 Author
-Mirco Negri GitHub: mirconegri
+---
 
+## 📜 License
+
+MIT License © 2025 `Mirco Negri` — see [LICENSE](LICENSE) file for details.
+
+---
+
+## 👤 Author
+
+`Mirco Negri` GitHub: https://github.com/mirconegri
