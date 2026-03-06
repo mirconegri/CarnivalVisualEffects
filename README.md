@@ -22,8 +22,8 @@ Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web
 
 | | |
 |:--:|:--:|
-| <img src="GIF/video1_1.gif" width="100%"><br>**Quantum Nodes & Liquid Bob**<br>Interconnected audio-reactive nodes and beat-synced fluid dynamics | <img src="images/video2_1.gif" width="100%"><br>**Oscilloscope & Audio Spark**<br>Frequency-based waveform distortion with triggered particle sparks |
-| <img src="images/video3_1.gif" width="100%"><br>**Flowing Waves & Particle Storm**<br>Phase-shifting sine waves rendered within a chaotic particle field | <img src="images/video4_1.gif" width="100%"><br>**Fractal Sync**<br>Recursive geometric fractal structures scaling to bass frequencies |
+| <img src="gif/video1.gif" width="100%"><br>**Quantum Nodes & Liquid Bob**<br>Interconnected audio-reactive nodes and beat-synced fluid dynamics | <img src="gif/video2.gif" width="100%"><br>**Oscilloscope & Audio Spark**<br>Frequency-based waveform distortion with triggered particle sparks |
+| <img src="gif/video3.gif" width="100%"><br>**Flowing Waves & Particle Storm**<br>Phase-shifting sine waves rendered within a chaotic particle field | <img src="gif/video4.gif" width="100%"><br>**Fractal Sync**<br>Recursive geometric fractal structures scaling to bass frequencies |
 
 ---
 
