@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <style>
+    * { margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: black; }
+    #visualiser { position: absolute; width: 100%; height: 100%; display: block; }
+    /* BPM pop-up display style */
+    #bpm-display { 
+        color: white; position: absolute; bottom: 20px; right: 20px; 
+        font-size: 24px; font-family: monospace; z-index: 10; opacity: 0; 
+        transition: opacity 0.5s ease; text-shadow: 0 0 10px rgba(0,0,0,0.8); pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="visualiser"></canvas>
+  <p id="bpm-display"></p> 
+  <script>
+    class Visualiser {
+        constructor(canvasId) {
+            this.patternIndex = 0; 
+            
+            // Logo image handling
+            this.logoIndex = 0;
+            this.logo = new Image();
+            this.logoLoaded = false;
+            this.loadNextLogo();
+
+            this.canvas = document.getElementById(canvasId);
+            this.ctx = this.canvas.getContext('2d');
+            
+            this.minutesPerPattern = 3;
+            this.switchInterval = this.minutesPerPattern * 60 * 1000;
+            this.startTime = Date.now();
+            this.beat = 0;
+            this.hit = 0;
+            
+            // Manual BPM variables
+            this.bpm = 120; // Default BPM without mic
+            this.bpmTimeout = null;
+            this.lastTime = Date.now();
+
+            this.patterns = [
+                {name: "Oscilloscope Sync", fun: this.renderOscilloscope.bind(this)},
+                {name: "Fractal Sync", fun: this.renderFractalPulse.bind(this)},
+                {name: "SpectrumBars Sync", fun: this.renderSpectrumBars.bind(this)},
+                {name: "FlowingWaves Sync", fun: this.renderFlowingWaves.bind(this)},
+                {name: "ParticleStorm Sync", fun: this.renderParticleStorm.bind(this)},
+                {name: "SpiralWaves Sync", fun: this.renderSpiralWaves.bind(this)},
+                {name: "Kaleidoscope Sync", fun: this.renderKaleidoscope.bind(this)},
+                {name: "MatrixRain Sync", fun: this.renderMatrixRain.bind(this)},
+                {name: "CircularPulse Sync", fun: this.renderCircularPulse.bind(this)},
+                {name: "LaserBeams Sync", fun: this.renderLaserBeams.bind(this)},
+                {name: "Confetti Sync", fun: this.renderConfetti.bind(this)},
+                {name: "RadialBass Sync", fun: this.renderRadialBass.bind(this)},
+                {name: "Tunnel Sync", fun: this.renderTunnel.bind(this)},
+                {name: "HousePulseRings Sync", fun: this.renderHousePulseRings.bind(this)},
+                {name: "Starfield Warp", fun: this.renderStarfieldWarp.bind(this)},
+                {name: "Equalizer Circle", fun: this.renderEqualizerCircle.bind(this)},
+                {name: "Waveform Terrain", fun: this.renderWaveformTerrain.bind(this)},
+                {name: "Quantum Nodes", fun: this.renderQuantumNodes.bind(this)},
+                {name: "Liquid Blob Sync", fun: this.renderLiquidBlob.bind(this)},
+                {name: "Vinyl Grooves Sync", fun: this.renderVinylGrooves.bind(this)},
+                {name: "Neon DNA Sync", fun: this.renderNeonDNA.bind(this)},
+                {name: "Audio Sparks Sync", fun: this.renderAudioSparks.bind(this)}
+            ];
+            
+            this.currentPattern = null;
+            this.patternData = {};
+            this.debugMode = false;
+            this.debugIndex = 0;
+            
+            this.resizeCanvas();
+            window.addEventListener('resize', () => this.resizeCanvas());
+            this.switchPattern();
+
+            this.audioInit = false;
+            document.addEventListener('click', () => this.initAudio(), {once:true});
+        }
+
+        loadNextLogo() {
+            const img = new Image();
+            img.onload = () => { this.logo = img; this.logoLoaded = true; };
+            img.onerror = () => { if (this.logoIndex > 0) { this.logoIndex = 0; this.loadNextLogo(); } };
+            img.src = `image${this.logoIndex}.png`;
+        }
+
+        async initAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                this.actx = new (window.AudioContext || window.webkitAudioContext)();
+                this.analyser = this.actx.createAnalyser();
+                this.analyser.fftSize = 128; 
+                this.actx.createMediaStreamSource(stream).connect(this.analyser);
+                this.data = new Uint8Array(this.analyser.frequencyBinCount);
+                this.lastBeatT = 0;
+                this.audioInit = true;
+            } catch(e) { console.error("Mic error:", e); }
+        }
+
+        // Adjust BPM manually
+        changeBPM(amount) {
+            // Ignore manual commands if mic is active
+            if (this.audioInit && this.analyser) return; 
+
+            this.bpm += amount;
+            if (this.bpm < 30) this.bpm = 30;   
+            if (this.bpm > 300) this.bpm = 300; 
+
+            const display = document.getElementById("bpm-display");
+            display.innerText = `BPM: ${this.bpm}`;
+            display.style.opacity = 1;
+
+            clearTimeout(this.bpmTimeout);
+            this.bpmTimeout = setTimeout(() => { display.style.opacity = 0; }, 1000);
+        }
+
+        resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            const sizes = this.canvas.getBoundingClientRect();
+            this.canvas.width = sizes.width * dpr;
+            this.canvas.height = sizes.height * dpr;
+            this.ctx.scale(dpr, dpr);
+            this.width = sizes.width;
+            this.height = sizes.height;
+            this.patternData = {};
+        }
+
+        generateWaveData(count = 128) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                const f1 = Math.sin(i * 0.1 + this.beat * Math.PI) * 0.5;
+                const f2 = Math.sin(i * 0.05 + this.beat * 2) * 0.3;
+                data.push((f1 + f2) * (0.5 + this.hit));
+            }
+            return data;
+        }
+
+        generateSpectrumData(count = 64) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                const val = Math.abs(Math.sin(this.beat * Math.PI + i * 0.2)) * (1 - i / count * 0.5);
+                data.push(val * (0.3 + this.hit * 0.7));
+            }
+            return data;
+        }
+
+        clear(alpha) {
+            this.ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+            this.ctx.fillRect(0, 0, this.width, this.height);
+        }
+
+        renderOscilloscope() {
+            this.clear(.15);
+            const wave = this.generateWaveData(256);
+            const cy = this.height / 2, step = this.width / wave.length;
+            this.ctx.shadowBlur = 10 + this.hit * 20;
+            this.ctx.shadowColor = `hsl(${(this.beat * 60) % 360}, 100%, 50%)`;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, cy + wave[0] * 200);
+            for (let i = 1; i < wave.length; i++) this.ctx.lineTo(i * step, cy + wave[i] * 200);
+            this.ctx.strokeStyle = this.ctx.shadowColor;
+            this.ctx.lineWidth = 2 + this.hit * 3;
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
+
+        renderSpectrumBars() {
+            this.clear(0.2);
+            const spec = this.generateSpectrumData(Math.floor(this.width / 15));
+            const bw = this.width / spec.length;
+            for (let i = 0; i < spec.length; i++) {
+                const bh = spec[i] * this.height * 0.8, x = i * bw, y = this.height - bh;
+                const hue = (i * 10 + this.beat * 90) % 360;
+                this.ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                this.ctx.fillRect(x + 2, y, bw - 4, bh);
+                this.ctx.fillStyle = `hsla(${hue}, 100%, 80%, ${this.hit})`;
+                this.ctx.fillRect(x + 2, y - 10 - this.hit * 20, bw - 4, 5);
+            }
+        }
+
+        renderFlowingWaves() {
+            this.clear(.15);
+            for (let w = 0; w < 5; w++) {
+                const hue = (w * 60 + this.beat * 30) % 360;
+                this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, 0.8)`;
+                this.ctx.lineWidth = 2 + w + this.hit * 3;
+                this.ctx.shadowBlur = this.hit * 15;
+                this.ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+                this.ctx.beginPath();
+                for (let x = 0; x < this.width; x += 10) {
+                    const y = this.height / 2 + Math.sin(x * 0.01 + this.beat * 2 + w) * (50 + w * 20 + this.hit * 80);
+                    x === 0 ? this.ctx.moveTo(x, y) : this.ctx.lineTo(x, y);
+                }
+                this.ctx.stroke();
+            }
+            this.ctx.shadowBlur = 0;
+        }
+
+        renderParticleStorm() {
+            if (!this.patternData.particles) {
+                this.patternData.particles = Array.from({length: 200}, () => ({
+                    x: Math.random() * this.width, y: Math.random() * this.height,
+                    vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5,
+                    hue: Math.random() * 360, size: Math.random() * 3 + 1
+                }));
+            }
+            this.clear(0.2);
+            const speed = 1 + this.hit * 5;
+            this.patternData.particles.forEach(p => {
+                p.x += p.vx * speed; p.y += p.vy * speed; p.hue = (p.hue + speed) % 360;
+                if (p.x < 0) p.x = this.width; if (p.x > this.width) p.x = 0;
+                if (p.y < 0) p.y = this.height; if (p.y > this.height) p.y = 0;
+                this.ctx.fillStyle = `hsl(${p.hue}, 100%, ${50 + this.hit * 50}%)`;
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, p.size + this.hit * 3, 0, Math.PI * 2);
+                this.ctx.fill();
+            });
+        }
+
+        renderHousePulseRings() {
+            this.clear(0.25);
+            const cx = this.width / 2, cy = this.height / 2;
+            const pulse = Math.abs(Math.sin(this.beat * Math.PI)); 
+            const maxR = Math.min(this.width, this.height) * 0.45;
+
+            for (let i = 0; i < 6; i++) {
+                const r = maxR * (i / 6) * pulse + 20 + (this.hit * 50);
+                const hue = (this.beat * 60 + i * 60) % 360;
+                this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${1 - i / 6})`;
+                this.ctx.lineWidth = (8 - i) + (this.hit * 5);
+                this.ctx.shadowBlur = 25 * this.hit;
+                this.ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+                this.ctx.beginPath();
+                this.ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                this.ctx.stroke();
+            }
+            this.ctx.shadowBlur = 0;
+            this.renderDynamicFiller();
+        }
+
+        renderSpiralWaves() {
+            this.clear(0.2);
+            const cx = this.width / 2, cy = this.height / 2;
+            for (let s = 0; s < 6; s++) {
+                this.ctx.strokeStyle = `hsla(${(s * 60 + this.beat * 60) % 360}, 100%, 60%, 0.8)`;
+                this.ctx.lineWidth = 2 + this.hit * 4;
+                this.ctx.beginPath();
+                for (let i = 0; i < 360; i += 5) {
+                    const a = i * Math.PI / 180 + s * Math.PI / 3 + this.beat;
+                    const r = 20 + i * 0.8 + Math.sin(i * 0.1 - this.beat * 2) * (30 + this.hit * 50);
+                    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                    i === 0 ? this.ctx.moveTo(x, y) : this.ctx.lineTo(x, y);
+                }
+                this.ctx.stroke();
+            }
+            this.renderDynamicFiller();
+        }
+
+        renderKaleidoscope() {
+            this.clear(0.2);
+            this.ctx.save();
+            this.ctx.translate(this.width / 2, this.height / 2);
+            this.ctx.rotate(this.beat * 0.2);
+            for (let seg = 0; seg < 8; seg++) {
+                this.ctx.save();
+                this.ctx.rotate((seg * 2 * Math.PI) / 8);
+                for (let i = 0; i < 5; i++) {
+                    const a = this.beat * (i % 2 ? 1 : -1), r = 80 + i * 50 + this.hit * 40;
+                    const size = 10 + i * 5 + this.hit * 20, hue = (i * 45 + this.beat * 90) % 360;
+                    this.ctx.fillStyle = `hsla(${hue}, 100%, 60%, 0.8)`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(Math.cos(a) * r, Math.sin(a) * r, size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.restore();
+            }
+            this.ctx.restore();
+            this.renderDynamicFiller();
+        }
+
+        renderMatrixRain() {
+            if (!this.patternData.drops) {
+                this.patternData.drops = Array.from({length: 80}, () => ({
+                    x: Math.random() * this.width, y: Math.random() * this.height,
+                    speed: Math.random() * 5 + 2, length: Math.random() * 80 + 40
+                }));
+            }
+            this.clear(0.2);
+            const hueBase = (this.beat * 30) % 360;
+            this.patternData.drops.forEach(d => {
+                d.y += d.speed * (1 + this.hit * 4);
+                if (d.y > this.height + d.length) { d.y = -d.length; d.x = Math.random() * this.width; }
+                const grad = this.ctx.createLinearGradient(0, d.y - d.length, 0, d.y);
+                grad.addColorStop(0, `hsla(${hueBase}, 100%, 50%, 0)`);
+                grad.addColorStop(1, `hsla(${hueBase}, 100%, 50%, ${0.5 + this.hit * 0.5})`);
+                this.ctx.fillStyle = grad;
+                this.ctx.fillRect(d.x, d.y - d.length, 4 + this.hit * 2, d.length);
+                this.ctx.fillStyle = '#fff';
+                this.ctx.fillRect(d.x, d.y - 5, 4 + this.hit * 2, 5 + this.hit * 10);
+            });
+        }
+
+        renderCircularPulse() {
+            this.clear(0.15);
+            this.renderDynamicFiller(); 
+            const maxDist = this.width / 2; 
+            for (let i = 0; i < 12; i++) {
+                const r = ((i * 150 + this.beat * 450) % maxDist) + this.hit * 50;
+                const alpha = 1 - (r / maxDist);
+                this.ctx.strokeStyle = `hsla(${(i * 20 + this.beat * 120) % 360}, 100%, 70%, ${alpha})`;
+                this.ctx.lineWidth = 8 + this.hit * 25;
+                this.ctx.beginPath();
+                this.ctx.arc(this.width / 2, this.height / 2, r, 0, Math.PI * 2);
+                this.ctx.stroke();
+            }
+        }
+
+        renderLaserBeams() {
+            this.clear(0.2);
+            const cx = this.width / 2, cy = this.height / 2;
+            for (let i = 0; i < 16; i++) {
+                const a = (i / 16 * Math.PI * 2) + this.beat * 0.5 * (i % 2 ? 1 : -1);
+                const len = 100 + Math.sin(this.beat * 2 + i) * 50 + this.hit * this.width;
+                const ex = cx + Math.cos(a) * len, ey = cy + Math.sin(a) * len;
+                const hue = (i * 22 + this.beat * 120) % 360;
+                const grad = this.ctx.createLinearGradient(cx, cy, ex, ey);
+                grad.addColorStop(0, `hsla(${hue}, 100%, 60%, 1)`);
+                grad.addColorStop(1, `hsla(${hue}, 100%, 60%, 0)`);
+                this.ctx.strokeStyle = grad;
+                this.ctx.lineWidth = 3 + this.hit * 8;
+                this.ctx.beginPath();
+                this.ctx.moveTo(cx, cy); this.ctx.lineTo(ex, ey);
+                this.ctx.stroke();
+            }
+        }
+
+        renderConfetti() {
+            if (!this.patternData.confetti) {
+                this.patternData.confetti = Array.from({length: 200}, () => ({
+                    x: Math.random() * this.width, y: Math.random() * this.height,
+                    s: Math.random() * 5 + 2, r: Math.random() * 360, hue: Math.random() * 360
+                }));
+            }
+            this.clear(0.2);
+            this.patternData.confetti.forEach(p => {
+                p.y += p.s * (1 + this.hit * 3); p.r += p.s * (1 + this.hit * 2);
+                if (p.y > this.height) { p.y = -20; p.x = Math.random() * this.width; }
+                this.ctx.save();
+                this.ctx.translate(p.x, p.y);
+                this.ctx.rotate(p.r * Math.PI / 180);
+                this.ctx.fillStyle = `hsl(${(p.hue + this.beat * 30) % 360}, 100%, ${50 + this.hit * 50}%)`;
+                this.ctx.fillRect(-5 - this.hit * 5, -10 - this.hit * 10, 10 + this.hit * 10, 20 + this.hit * 20);
+                this.ctx.restore();
+            });
+        }
+
+        renderFractalPulse() {
+            this.clear(0.15);
+            const bounce = Math.abs(Math.sin(this.beat * Math.PI)); 
+            this.ctx.save();
+            this.ctx.translate(this.width/2, this.height/2); 
+            this.ctx.rotate(this.beat * 0.2);
+            const draw = (len, d) => {
+                if(!d) return;
+                this.ctx.beginPath(); this.ctx.moveTo(0,0); this.ctx.lineTo(0, -len);
+                this.ctx.strokeStyle = `hsla(${(this.beat*90 + d*25)%360}, 100%, 60%, ${d/6})`;
+                this.ctx.lineWidth = d + this.hit * 3; this.ctx.stroke();
+                this.ctx.translate(0, -len);
+                const a = 0.4 + bounce * 0.6;
+                this.ctx.save(); this.ctx.rotate(a); draw(len * 0.7, d - 1); this.ctx.restore();
+                this.ctx.save(); this.ctx.rotate(-a); draw(len * 0.7, d - 1); this.ctx.restore();
+            };
+            for(let i=0; i<4; i++) {
+                this.ctx.rotate(Math.PI/2);
+                this.ctx.save(); draw(Math.min(this.width, this.height)*0.1 + this.hit*50, 6); this.ctx.restore();
+            }
+            this.ctx.restore();
+            this.renderDynamicFiller();
+        }
+
+        renderRadialBass() {
+            this.clear(0.2);
+            const data = this.generateSpectrumData(64), cx = this.width / 2, cy = this.height / 2;
+            const rBase = 50 + this.hit * 100;
+            this.ctx.beginPath();
+            for(let i = 0; i < data.length; i++) {
+                const a = (i / data.length) * Math.PI * 2 + this.beat, r = rBase + data[i] * 300;
+                const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                i === 0 ? this.ctx.moveTo(x, y) : this.ctx.lineTo(x, y);
+            }
+            this.ctx.closePath();
+            this.ctx.lineWidth = 4 + this.hit * 8; 
+            const hue = (this.beat * 120) % 360;
+            this.ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+            this.ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.1)`;
+            this.ctx.fill(); this.ctx.stroke();
+            this.renderDynamicFiller();
+        }
+
+        renderTunnel() {
+            this.clear(0.2);
+            const cx = this.width / 2, cy = this.height / 2, maxDim = Math.max(this.width, this.height);
+            for(let i = 0; i < 15; i++) {
+                const size = ((this.beat * 200) + i * (maxDim / 15)) % maxDim;
+                const alpha = 1 - Math.pow(size / maxDim, 2);
+                this.ctx.strokeStyle = `hsla(${(i * 20 + this.beat * 60) % 360}, 100%, 50%, ${alpha})`;
+                this.ctx.lineWidth = 2 + (size / maxDim) * 10 + this.hit * 10;
+                this.ctx.save();
+                this.ctx.translate(cx, cy);
+                this.ctx.rotate(this.beat * (i % 2 ? 0.1 : -0.1));
+                this.ctx.strokeRect(-size/2, -size/2, size, size);
+                this.ctx.restore();
+            }
+        }
+
+        switchPattern() {
+            if (this.debugMode) {
+                this.currentPattern = this.patterns[this.debugIndex].fun;
+                this.debugIndex = (this.debugIndex+1)%this.patterns.length;
+            } else {
+                this.currentPattern = this.patterns[this.patternIndex].fun;
+                this.patternIndex = (this.patternIndex + 1) % this.patterns.length;
+            }
+            this.patternData = {};
+            this.startTime = Date.now();
+            this.logoIndex++;
+            this.loadNextLogo();
+        }
+
+        renderLogoOverlay() {
+            const cx = this.width / 2, cy = this.height / 2;
+            const maxSize = Math.min(this.width, this.height) * 0.23; 
+            const scale = (1 + this.hit * 0.3); 
+            const opacity = 0.85 + this.hit * 0.15; 
+            const ratio = this.logo.width / this.logo.height;
+            let drawW, drawH;
+            
+            if (ratio > 1) { drawW = maxSize; drawH = maxSize / ratio; } 
+            else { drawH = maxSize; drawW = maxSize * ratio; }
+            
+            drawW *= scale; drawH *= scale;
+
+            this.ctx.save();
+            this.ctx.translate(cx, cy); 
+            this.ctx.globalAlpha = opacity; 
+            this.ctx.shadowColor = "white"; this.ctx.shadowBlur = 4; 
+            this.ctx.drawImage(this.logo, -drawW / 2, -drawH / 2, drawW, drawH);
+            this.ctx.shadowBlur = 0;            
+            this.ctx.restore(); 
+        }
+
+        renderStarfieldWarp() {
+            if (!this.patternData.stars) {
+                this.patternData.stars = Array.from({length: 300}, () => ({
+                    x: (Math.random() - 0.5) * this.width, y: (Math.random() - 0.5) * this.height, z: Math.random() * this.width
+                }));
+            }
+            this.clear(0.3);
+            const cx = this.width / 2, cy = this.height / 2;
+            const speed = 2 + this.hit * 25, hue = (this.beat * 50) % 360;
+
+            this.patternData.stars.forEach(s => {
+                s.z -= speed;
+                if (s.z <= 0) {
+                    s.z = this.width; s.x = (Math.random() - 0.5) * this.width; s.y = (Math.random() - 0.5) * this.height;
+                }
+                const k = 128.0 / s.z;
+                const px = s.x * k + cx, py = s.y * k + cy;
+
+                if (px >= 0 && px <= this.width && py >= 0 && py <= this.height) {
+                    const size = (1 - s.z / this.width) * 4 + (this.hit * 2);
+                    this.ctx.fillStyle = `hsla(${hue + s.z * 0.5}, 100%, 70%, 1)`;
+                    if (this.hit > 0.5) {
+                        const oldK = 128.0 / (s.z + speed * 2);
+                        const opx = s.x * oldK + cx, opy = s.y * oldK + cy;
+                        this.ctx.strokeStyle = this.ctx.fillStyle;
+                        this.ctx.lineWidth = size;
+                        this.ctx.beginPath(); this.ctx.moveTo(opx, opy); this.ctx.lineTo(px, py); this.ctx.stroke();
+                    } else {
+                        this.ctx.fillRect(px, py, size, size);
+                    }
+                }
+            });
+        }
+
+        renderEqualizerCircle() {
+            this.clear(0.2);
+            const spec = this.generateSpectrumData(64);
+            const cx = this.width / 2, cy = this.height / 2;
+            const rBase = Math.min(this.width, this.height) * 0.25;
+
+            for (let i = 0; i < spec.length; i++) {
+                const a = (i / spec.length) * Math.PI * 2 + (this.beat * 0.5);
+                const bh = spec[i] * 150 + (this.hit * 50);
+                const inR = rBase + (this.hit * 20), outR = inR + bh;
+                const hue = (i * (360 / spec.length) + this.beat * 90) % 360;
+                
+                this.ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+                this.ctx.lineWidth = (this.width * 2 * Math.PI / spec.length) * 0.6;
+                this.ctx.lineCap = 'round';
+                this.ctx.beginPath();
+                this.ctx.moveTo(cx + Math.cos(a) * inR, cy + Math.sin(a) * inR);
+                this.ctx.lineTo(cx + Math.cos(a) * outR, cy + Math.sin(a) * outR);
+                this.ctx.stroke();
+            }
+            this.renderDynamicFiller();
+        }
+
+        renderWaveformTerrain() {
+            this.clear(0.15);
+            const wave = this.generateWaveData(128);
+            const lines = 12, sy = this.height / (lines + 2);
+            this.ctx.lineWidth = 2 + this.hit * 2;
+
+            for (let i = 0; i < lines; i++) {
+                const prog = i / lines;
+                this.ctx.strokeStyle = `hsla(${(i * 20 + this.beat * 40) % 360}, 100%, 60%, ${1 - prog * 0.5})`;
+                const yBase = sy * (i + 1) + (this.beat * 20) % sy;
+
+                this.ctx.beginPath();
+                for (let x = 0; x < wave.length; x++) {
+                    const xp = (x / (wave.length - 1)) * this.width;
+                    const mute = 1 - Math.abs((x / wave.length) - 0.5) * 2;
+                    const wi = (x + Math.floor(this.beat * 10 + i * 5)) % wave.length;
+                    const yp = yBase + wave[wi] * 150 * mute * (1 + prog);
+                    x === 0 ? this.ctx.moveTo(xp, yp) : this.ctx.lineTo(xp, yp);
+                }
+                this.ctx.stroke();
+            }
+        }
+
+        renderQuantumNodes() {
+            if (!this.patternData.nodes) {
+                this.patternData.nodes = Array.from({length: 60}, () => ({
+                    x: Math.random() * this.width, y: Math.random() * this.height,
+                    vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2
+                }));
+            }
+            this.clear(0.2);
+            const maxD = 150 + this.hit * 100, hue = (this.beat * 60) % 360;
+
+            this.patternData.nodes.forEach(n => {
+                n.x += n.vx * (1 + this.hit * 3); n.y += n.vy * (1 + this.hit * 3);
+                if (n.x <= 0 || n.x >= this.width) n.vx *= -1;
+                if (n.y <= 0 || n.y >= this.height) n.vy *= -1;
+                this.ctx.fillStyle = `hsl(${hue}, 100%, 70%)`;
+                this.ctx.beginPath(); this.ctx.arc(n.x, n.y, 3 + this.hit * 4, 0, Math.PI * 2); this.ctx.fill();
+            });
+
+            this.ctx.lineWidth = 1 + this.hit * 2;
+            for (let i = 0; i < this.patternData.nodes.length; i++) {
+                for (let j = i + 1; j < this.patternData.nodes.length; j++) {
+                    const n1 = this.patternData.nodes[i], n2 = this.patternData.nodes[j];
+                    const d = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+                    if (d < maxD) {
+                        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${1 - (d / maxD)})`;
+                        this.ctx.beginPath(); this.ctx.moveTo(n1.x, n1.y); this.ctx.lineTo(n2.x, n2.y); this.ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        renderLiquidBlob() {
+            this.clear(0.2);
+            const data = this.generateSpectrumData(32), cx = this.width / 2, cy = this.height / 2;
+            const rBase = Math.min(this.width, this.height) * 0.25;
+
+            this.ctx.beginPath();
+            for (let i = 0; i <= data.length; i++) {
+                const a = (i / data.length) * Math.PI * 2 + this.beat * 0.5;
+                const r = rBase + data[i % data.length] * 150 + this.hit * 50;
+                const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                i === 0 ? this.ctx.moveTo(x, y) : this.ctx.lineTo(x, y);
+            }
+            this.ctx.closePath();
+            
+            const hue = (this.beat * 50) % 360;
+            this.ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.5)`;
+            this.ctx.strokeStyle = `hsl(${hue}, 100%, 70%)`;
+            this.ctx.lineWidth = 4 + this.hit * 5;
+            this.ctx.shadowBlur = 20 * this.hit; this.ctx.shadowColor = this.ctx.strokeStyle;
+            this.ctx.fill(); this.ctx.stroke(); this.ctx.shadowBlur = 0;
+            this.renderDynamicFiller();
+        }
+
+        renderVinylGrooves() {
+            this.clear(0.2);
+            const wave = this.generateWaveData(128), cx = this.width / 2, cy = this.height / 2;
+            
+            for (let ring = 1; ring <= 8; ring++) {
+                const rBase = ring * 30 + this.hit * 20;
+                this.ctx.beginPath();
+                for (let i = 0; i <= wave.length; i++) {
+                    const a = (i / wave.length) * Math.PI * 2 + this.beat * (ring % 2 === 0 ? 1 : -1);
+                    const r = rBase + wave[i % wave.length] * 15 * (ring * 0.2);
+                    i === 0 ? this.ctx.moveTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r) : this.ctx.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+                }
+                this.ctx.closePath();
+                this.ctx.strokeStyle = `hsla(${(this.beat * 30 + ring * 20) % 360}, 100%, 60%, ${1 - ring/10})`;
+                this.ctx.lineWidth = 2 + this.hit * 3; this.ctx.stroke();
+            }
+            this.renderDynamicFiller();
+        }
+
+        renderNeonDNA() {
+            this.clear(0.2);
+            const cx = this.width / 2, amp = 100 + this.hit * 100;
+            this.ctx.lineWidth = 3 + this.hit * 4;
+            
+            for (let i = 0; i < 2; i++) {
+                this.ctx.beginPath();
+                this.ctx.strokeStyle = `hsl(${(this.beat * 60 + i * 180) % 360}, 100%, 60%)`;
+                this.ctx.shadowColor = this.ctx.strokeStyle; this.ctx.shadowBlur = 10 * this.hit;
+                
+                const off = i === 0 ? 0 : Math.PI;
+                for (let y = 0; y < this.height; y += 10) {
+                    const x = cx + Math.sin(y * 0.02 + this.beat * 3 + off) * amp;
+                    y === 0 ? this.ctx.moveTo(x, y) : this.ctx.lineTo(x, y);
+                    if (y % 40 === 0 && i === 0) {
+                        const x2 = cx + Math.sin(y * 0.02 + this.beat * 3 + Math.PI) * amp;
+                        this.ctx.moveTo(x, y); this.ctx.lineTo(x2, y);
+                    }
+                }
+                this.ctx.stroke();
+            }
+            this.ctx.shadowBlur = 0;
+            this.renderDynamicFiller();
+        }
+
+        renderAudioSparks() {
+            if (!this.patternData.sparks) this.patternData.sparks = [];
+            this.clear(0.2);
+            
+            if (this.hit > 0.6 && Math.random() > 0.5) {
+                this.patternData.sparks.push({
+                    x: this.width / 2, y: this.height / 2, vx: (Math.random() - 0.5) * 60, vy: (Math.random() - 0.5) * 10,
+                    rot: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.2,
+                    sides: Math.floor(Math.random() * 3) + 3, hue: (this.beat * 80) % 360, size: 10
+                });
+            }
+            
+            for (let i = this.patternData.sparks.length - 1; i >= 0; i--) {
+                const s = this.patternData.sparks[i];
+                s.x += s.vx * (1 + this.hit * 2); s.y += s.vy * (1 + this.hit * 2);
+                s.rot += s.rotSpeed; s.size += 8 + this.hit * 10;
+                
+                if (s.x < -100 || s.x > this.width + 100 || s.y < -100 || s.y > this.height + 100) {
+                    this.patternData.sparks.splice(i, 1); continue;
+                }
+                
+                this.ctx.save();
+                this.ctx.translate(s.x, s.y); this.ctx.rotate(s.rot);
+                this.ctx.strokeStyle = `hsl(${s.hue}, 100%, 60%)`;
+                this.ctx.lineWidth = 2 + this.hit * 3;
+                this.ctx.beginPath();
+                for (let j = 0; j <= s.sides; j++) {
+                    const a = (j / s.sides) * Math.PI * 2;
+                    j === 0 ? this.ctx.moveTo(Math.cos(a) * s.size, Math.sin(a) * s.size) : this.ctx.lineTo(Math.cos(a) * s.size, Math.sin(a) * s.size);
+                }
+                this.ctx.stroke(); this.ctx.restore();
+            }
+        }
+
+        renderDynamicFiller() {
+            this.ctx.globalAlpha = 0.2 + this.hit * 0.15;
+            const type = this.patternIndex % 10, hue = (this.beat * 40) % 360;
+
+            if (type === 0) {
+                for(let i = 0; i < 200; i++) {
+                    let x = (Math.sin(i * 99) * this.width + this.beat * 120) % this.width;
+                    let y = (Math.cos(i * 99) * this.height + this.beat * 60) % this.height;
+                    if(x < 0) x += this.width; if(y < 0) y += this.height;
+                    this.ctx.fillStyle = `hsl(${(hue + i * 2) % 360}, 100%, 75%)`;
+                    this.ctx.fillRect(x, y, 4 + this.hit * 5, 4 + this.hit * 5);
+                }
+            } else if (type === 1) {
+                this.ctx.lineWidth = 4 + this.hit * 6;
+                for(let i = 0; i < 8; i++) {
+                    this.ctx.strokeStyle = `hsl(${(hue + i * 25) % 360}, 100%, 65%)`;
+                    this.ctx.beginPath();
+                    for(let x = 0; x <= this.width; x += 100) this.ctx.lineTo(x, this.height / 2 + Math.sin(x * 0.003 + this.beat * 0.6 + i) * 450);
+                    this.ctx.stroke();
+                }
+            } else if (type === 2) {
+                this.ctx.lineWidth = 20 + this.hit * 30;
+                for(let i = 0; i < 12; i++) {
+                    this.ctx.strokeStyle = `hsl(${(hue + i * 20) % 360}, 100%, 70%)`;
+                    this.ctx.beginPath(); this.ctx.arc(this.width / 2, this.height / 2, (this.beat * 80 + i * 250) % 2500, 0, Math.PI * 2); this.ctx.stroke();
+                }
+            } else if (type === 3) {
+                for(let y = 0; y < this.height; y += 120) {
+                    let w = (Math.sin(y * 0.005 + this.beat * 0.2) * 0.5 + 0.5) * this.width; 
+                    this.ctx.fillStyle = `hsl(${(hue + y * 0.05) % 360}, 100%, 65%)`;
+                    this.ctx.fillRect(this.width / 2 - w / 2, y, w, 120);
+                }
+            } else if (type === 4) {
+                this.ctx.lineWidth = 8 + this.hit * 15;
+                for(let i = 0; i < 20; i++) {
+                    let off = (this.beat * 30 + i * 200) % (this.width + this.height); 
+                    this.ctx.strokeStyle = `hsl(${(hue + i * 15) % 360}, 100%, 70%)`;
+                    this.ctx.beginPath(); this.ctx.moveTo(off - this.height, 0); this.ctx.lineTo(off, this.height); this.ctx.stroke();
+                }
+            } else if (type === 5) {
+                this.ctx.lineWidth = 3 + this.hit * 5; this.ctx.strokeStyle = `hsl(${hue}, 100%, 65%)`;
+                this.ctx.beginPath();
+                let vX = this.width / 2, vY = this.height * 0.4 + Math.sin(this.beat * 0.5) * 50;
+                for(let x = -this.width * 2; x <= this.width * 3; x += 300) { this.ctx.moveTo(vX, vY); this.ctx.lineTo(x, this.height); }
+                let speed = (this.beat * 1.5) % 1; 
+                for(let i = 0; i < 25; i++) {
+                    let y = vY + Math.pow((i + speed) / 25, 3) * (this.height - vY);
+                    if(y > vY && y < this.height) { this.ctx.moveTo(0, y); this.ctx.lineTo(this.width, y); }
+                }
+                this.ctx.stroke();
+            } else if (type === 6) {
+                for (let i = 0; i < 20; i++) {
+                    let x = (this.beat * 150 + i * (this.width / 20)) % this.width;
+                    if (x < 0) x += this.width;
+                    this.ctx.fillStyle = `hsla(${(hue + i * 18) % 360}, 100%, 65%, 0.15)`;
+                    this.ctx.beginPath(); this.ctx.arc(x, this.height / 2, 150 + this.hit * 50, 0, Math.PI * 2); this.ctx.fill();
+                }
+            } else if (type === 7) {
+                this.ctx.lineWidth = 3 + this.hit * 5; this.ctx.strokeStyle = `hsl(${(hue + 180) % 360}, 100%, 65%)`;
+                this.ctx.beginPath();
+                let vX = this.width / 2, vY = this.height / 2;
+                for(let x = -this.width; x <= this.width * 2; x += 250) {
+                    this.ctx.moveTo(vX, vY); this.ctx.lineTo(x, 0); this.ctx.moveTo(vX, vY); this.ctx.lineTo(x, this.height);
+                }
+                let zOff = (this.beat * 2) % 1;
+                for(let i = 0; i < 20; i++) {
+                    let dY = Math.pow((i + zOff) / 20, 3) * (this.height / 2);
+                    if(dY > 2) {
+                        this.ctx.moveTo(0, vY - dY); this.ctx.lineTo(this.width, vY - dY);
+                        this.ctx.moveTo(0, vY + dY); this.ctx.lineTo(this.width, vY + dY);
+                    }
+                }
+                this.ctx.stroke();
+            } else if (type === 8) {
+                this.ctx.lineWidth = 4 + this.hit * 8;
+                let tunSpeed = (this.beat * 150) % 200, asp = this.height / this.width;
+                for(let i = 0; i < 15; i++) {
+                    let s = tunSpeed + i * 200;
+                    this.ctx.strokeStyle = `hsla(${(hue + i * 15) % 360}, 100%, 65%, ${Math.min(1, s / 300)})`;
+                    this.ctx.strokeRect(this.width / 2 - s, this.height / 2 - (s * asp), s * 2, s * 2 * asp);
+                }
+                this.ctx.strokeStyle = `hsl(${hue}, 100%, 65%)`;
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.width/2, this.height/2); this.ctx.lineTo(0,0);
+                this.ctx.moveTo(this.width/2, this.height/2); this.ctx.lineTo(this.width,0);
+                this.ctx.moveTo(this.width/2, this.height/2); this.ctx.lineTo(0,this.height);
+                this.ctx.moveTo(this.width/2, this.height/2); this.ctx.lineTo(this.width,this.height);
+                this.ctx.stroke();
+            } else {
+                for(let i = 0; i < 200; i++) {
+                    let z = ((i * 15 - this.beat * 400) % 2000 + 2000) % 2000;
+                    if(z < 10) continue;
+                    let s = Math.max(0.5, 600 / z) + this.hit * 4;
+                    this.ctx.fillStyle = `hsl(${(hue + z * 0.1) % 360}, 100%, 75%)`;
+                    this.ctx.fillRect(this.width / 2 + (Math.sin(i * 123) * 6000) / z, this.height / 2 + (Math.cos(i * 321) * 2000) / z, s, s);
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+
+        animate() {
+            const now = Date.now();
+            // Calculate delta time
+            const deltaTime = now - (this.lastTime || now);
+
+            if (this.audioInit && this.analyser) {
+                this.analyser.getByteFrequencyData(this.data);
+                const bass = (this.data[0] + this.data[1] + this.data[2] + this.data[3]) / 4; 
+                
+                if (bass > 150 && now - this.lastBeatT > 300) { 
+                    this.lastBeatT = now;
+                    this.hit = 1;
+                    this.beat = Math.floor(this.beat) + 1;
+                }
+                
+                this.hit *= 0.85; 
+                this.beat += (deltaTime / 1000) * 2; 
+            } else {
+                // Manual BPM logic without mic
+                const msPerBeat = 60000 / this.bpm;
+                this.beat += deltaTime / msPerBeat;
+                this.hit = Math.pow(1 - (this.beat % 1), 4);
+            }
+            
+            this.lastTime = now;
+            this.currentPattern();
+            if (this.logoLoaded) this.renderLogoOverlay();
+            
+            if (now - this.startTime >= 5000) this.switchPattern();
+            requestAnimationFrame(() => this.animate());
+        }
+
+        enableDebugMode() { this.debugMode = true; this.debugIndex = 0; this.switchPattern(); }
+        disableDebugMode() { this.debugMode = false; this.debugIndex = 0; this.switchPattern(); }
+    } 
+    
+    const visualiser = new Visualiser('visualiser');
+    visualiser.animate();
+    window.visualiser = visualiser;
+    
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') visualiser.debugMode ? visualiser.disableDebugMode() : visualiser.enableDebugMode();
+        else if (e.key === 'n' || e.key === 'N') visualiser.switchPattern();
+        else if (e.key === '+') visualiser.changeBPM(5); 
+        else if (e.key === '-') visualiser.changeBPM(-5); 
+    });
+  </script>
+</body>
+</html>
