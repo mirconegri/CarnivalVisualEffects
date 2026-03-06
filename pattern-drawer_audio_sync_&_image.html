@@ -309,7 +309,7 @@
             this.renderDynamicFiller(); 
             const maxDist = this.width / 2; 
             for (let i = 0; i < 12; i++) {
-                const r = ((i * 150 + this.beat * 450) % maxDist) + this.hit * 50;
+                const r = ((i * 150 + this.beat * 40) % maxDist) + this.hit * 50;
                 const alpha = 1 - (r / maxDist);
                 this.ctx.strokeStyle = `hsla(${(i * 20 + this.beat * 120) % 360}, 100%, 70%, ${alpha})`;
                 this.ctx.lineWidth = 8 + this.hit * 25;
