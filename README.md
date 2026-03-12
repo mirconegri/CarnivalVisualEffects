@@ -19,6 +19,8 @@ Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web
 ---
 
 ## 📸 Preview
+
+
 <table align="center" style="border: none;">
   <tr>
     <td align="center" width="50%" valign="top">
@@ -45,6 +47,7 @@ Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web
     </td>
   </tr>
 </table>
+
 ---
 
 ## 🧠 Technical Architecture
