@@ -20,7 +20,6 @@ Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web
 
 ## 📸 Preview
 
-| | |
 |:--:|:--:|
 | <img src="gif/video1.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Quantum Nodes & Liquid Bob**<br>Interconnected audio-reactive nodes and beat-synced fluid dynamics | <img src="gif/video2.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Oscilloscope & Audio Spark**<br>Frequency-based waveform distortion with triggered particle sparks |
 | <img src="gif/video3.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Flowing Waves & Particle Storm**<br>Phase-shifting sine waves rendered within a chaotic particle field | <img src="gif/video4.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Fractal Sync**<br>Recursive geometric fractal structures scaling to bass frequencies |
