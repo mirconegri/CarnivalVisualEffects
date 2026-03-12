@@ -19,11 +19,32 @@ Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web
 ---
 
 ## 📸 Preview
-
-|:--:|:--:|
-| <img src="gif/video1.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Quantum Nodes & Liquid Bob**<br>Interconnected audio-reactive nodes and beat-synced fluid dynamics | <img src="gif/video2.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Oscilloscope & Audio Spark**<br>Frequency-based waveform distortion with triggered particle sparks |
-| <img src="gif/video3.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Flowing Waves & Particle Storm**<br>Phase-shifting sine waves rendered within a chaotic particle field | <img src="gif/video4.gif" width="300px" height="200px" style="object-fit: cover;"><br>**Fractal Sync**<br>Recursive geometric fractal structures scaling to bass frequencies |
-
+<table align="center" style="border: none;">
+  <tr>
+    <td align="center" width="50%" valign="top">
+      <img src="gif/video1.gif" width="100%" style="max-width: 400px; border-radius: 8px;"><br><br>
+      <b>Quantum Nodes & Liquid Bob</b><br>
+      Interconnected audio-reactive nodes and beat-synced fluid dynamics
+    </td>
+    <td align="center" width="50%" valign="top">
+      <img src="gif/video2.gif" width="100%" style="max-width: 400px; border-radius: 8px;"><br><br>
+      <b>Oscilloscope & Audio Spark</b><br>
+      Frequency-based waveform distortion with triggered particle sparks
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%" valign="top">
+      <img src="gif/video3.gif" width="100%" style="max-width: 400px; border-radius: 8px;"><br><br>
+      <b>Flowing Waves & Particle Storm</b><br>
+      Phase-shifting sine waves rendered within a chaotic particle field
+    </td>
+    <td align="center" width="50%" valign="top">
+      <img src="gif/video4.gif" width="100%" style="max-width: 400px; border-radius: 8px;"><br><br>
+      <b>Fractal Sync</b><br>
+      Recursive geometric fractal structures scaling to bass frequencies
+    </td>
+  </tr>
+</table>
 ---
 
 ## 🧠 Technical Architecture
