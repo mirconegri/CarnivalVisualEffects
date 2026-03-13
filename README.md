@@ -83,7 +83,7 @@ No `npm install` or build process required.
 
 ## 📜 License
 
-MIT License © 2025 `Mirco Negri` — see [LICENSE](LICENSE) file for details.
+MIT License © 2026 `Mirco Negri` — see [LICENSE](LICENSE) file for details.
 
 ---
 
