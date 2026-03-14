@@ -3,7 +3,7 @@
 [![HTML](https://img.shields.io/badge/Language-HTML-orange?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/HTML) [![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript) [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 I developed this standalone web visualizer to project `audio-reactive` effects on screens during the Carnival DJ set at my student dorm.
-Built strictly with **HTML5 Canvas** and **Vanilla JavaScript**, it uses the Web Audio API to draw over 20 dynamic patterns perfectly synced to the music beat.
+Built strictly with `**HTML5 Canvas**` and `**Vanilla JavaScript**`, it uses the Web Audio API to draw over 20 dynamic patterns perfectly synced to the music beat.
 
 ---
 
