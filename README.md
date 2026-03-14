@@ -60,7 +60,7 @@ Low frequencies (bass) are isolated from the FFT array to trigger beat events, e
 ### ⌨️ Controls
 - **Click anywhere**: Initialize AudioContext and request microphone permissions.
 - **`N`**: Skip to the next random pattern.
-- **`+/-`**: Manually increase/decrease bpm if the mic fails.
+- **`+/-`**: Manually increase/decrease BPM if the mic fails.
 ---
 
 ## ⚙️ Installation & Usage
