@@ -61,8 +61,7 @@ Low frequencies (bass) are isolated from the FFT array to trigger beat events, e
 - **Click anywhere**: Initialize AudioContext and request microphone permissions.
 - **`N`**: Skip to the next random pattern.
 - **`D`**: Toggle Debug Mode (displays pattern name and cycles them every 5 seconds).
-- *(Note: Manual BPM controls can be triggered via the `visualiser.changeBPM()` method in the console).*
-
+- **`+/-`**: Manually increase/decrease bpm if the mic fails.
 ---
 
 ## ⚙️ Installation & Usage
