@@ -87,4 +87,7 @@ MIT License © 2026 `Mirco Negri` — see [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
 
-`Mirco Negri` GitHub: https://github.com/mirconegri
+`Mirco Negri` 
+GitHub: https://github.com/mirconegri
+Portfolio: https://mirconegri.github.io/Portfolio/
+
