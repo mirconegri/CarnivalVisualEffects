@@ -78,7 +78,7 @@ No `npm install` or build process required.
 
 
 ---
----
+
 
 <div align="center">
 
@@ -86,8 +86,6 @@ No `npm install` or build process required.
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mirconegri)
 [![Portfolio](https://img.shields.io/badge/Portfolio-00599C?style=for-the-badge&logo=globe&logoColor=white)](https://mirconegri.github.io/Portfolio/)
-
-*If you liked this project, feel free to star ⭐ the repository!*
 
 **📜 License**<br>
 MIT License © 2026 Mirco Negri — see the [LICENSE](LICENSE) file for details.
