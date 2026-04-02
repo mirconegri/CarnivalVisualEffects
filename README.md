@@ -82,7 +82,7 @@ No `npm install` or build process required.
 
 <div align="center">
 
-### 👨‍💻 Developed by Mirco Negri
+### 👨‍💻 Author: Mirco Negri
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mirconegri)
 [![Portfolio](https://img.shields.io/badge/Portfolio-00599C?style=for-the-badge&logo=globe&logoColor=white)](https://mirconegri.github.io/Portfolio/)
