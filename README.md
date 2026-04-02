@@ -84,11 +84,17 @@ No `npm install` or build process required.
 MIT License © 2026 `Mirco Negri` — see [LICENSE](LICENSE) file for details.
 
 ---
+---
+<div align="center">
 
-## 👤 Author
+### 👤 Author
+**Mirco Negri**
 
-`Mirco Negri` 
+<a href="https://mirconegri.github.io/Portfolio/">
+  <img src="https://img.shields.io/badge/🌐_Portfolio-00599C?style=for-the-badge&logoColor=white" alt="Portfolio">
+</a>
+<a href="https://github.com/mirconegri">
+  <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+</a>
 
-GitHub: https://github.com/mirconegri
-Portfolio: https://mirconegri.github.io/Portfolio/
-
+</div>
