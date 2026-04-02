@@ -78,16 +78,18 @@ No `npm install` or build process required.
 
 
 ---
+---
 
-### 👤 Author & Connect
+<div align="center">
 
-**Mirco Negri** — *Computer Science Student @ UniTrento*
+### 👨‍💻 Developed by Mirco Negri
 
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mirconegri)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Website-00599C?style=for-the-badge&logo=globe&logoColor=white)](https://mirconegri.github.io/Portfolio/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mirconegri)
+[![Portfolio](https://img.shields.io/badge/Portfolio-00599C?style=for-the-badge&logo=globe&logoColor=white)](https://mirconegri.github.io/Portfolio/)
 
-### 📜 License
+*If you liked this project, feel free to star ⭐ the repository!*
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-<br>
-© 2026 Mirco Negri
+**📜 License**<br>
+MIT License © 2026 Mirco Negri — see the [LICENSE](LICENSE) file for details.
+
+</div>
