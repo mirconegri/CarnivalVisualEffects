@@ -68,7 +68,8 @@ Low frequencies (bass) are isolated from the FFT array to trigger beat events, e
 No `npm install` or build process required.
 
 1. Clone the repository:
-   ```bash
+ 
+   ```
    git clone https://github.com/mirconegri/CarnivalVisualEffects.git
    cd Carnival-Visual-Effects
 
