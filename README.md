@@ -4,6 +4,8 @@
 [![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
+> 🌐 **<a href="https://carnivalvisualeffects.mirconegri.com" target="_blank">Visit the project website</a>**
+
 A standalone, audio-reactive web visualizer built with HTML5 Canvas and vanilla JavaScript, designed to drive projection screens at live events synced to music in real time.
 
 Originally built for a Carnival DJ set at a university dormitory. The constraint was tight: no time to learn a dedicated VJing tool, no budget for software licenses, and a need to run fullscreen on a laptop already handling audio output. A single self-contained HTML file opening in a browser tab solved all three problems simultaneously.
